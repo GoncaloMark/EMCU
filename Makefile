@@ -1,12 +1,15 @@
 OUTPUT_DIR := Debug
 OUTPUT_FILE := ${OUTPUT_DIR}/emcu
 
-C_SRC := src/main.c src/io.c src/mem.c src/iosim.c src/clock.c src/adc.c src/adcsim.c
+C_SRC := src/main.c src/io.c src/mem.c src/clock.c src/adc.c src/avg_filter.c
+C_SIM_SRC := src/iosim.c src/adcsim.c src/windsim.c
 
-C_OBJS := $(C_SRC:%.c=${OUTPUT_DIR}/%.o)
+SOURCES := ${C_SIM_SRC} ${C_SRC}
+
+C_OBJS := $(SOURCES:%.c=${OUTPUT_DIR}/%.o)
 
 CCOMPILER := gcc
-CFLAGS := -c -Og -Wall -Werror -ggdb -c -I"./src/include"
+CFLAGS := -c -O0 -g -Wall -Werror -ggdb -c -I"./src/include"
 
 # compile
 

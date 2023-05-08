@@ -2,6 +2,7 @@
 /// \author Gonçalo Marques
 /// \date   2023-04
 
+#include <stddef.h>
 #include "include/io.h"
 #include "include/mem.h"
 #define LATC_ADD  (0x010E)

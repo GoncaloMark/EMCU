@@ -6,7 +6,6 @@
 #define __IO_H__
 
 #include <stdint.h>
-#include <stddef.h>
 
 typedef struct OUT {
     uint8_t brake;

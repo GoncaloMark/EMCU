@@ -3,27 +3,21 @@
 #include "include/clock.h"
 #include "include/adc.h"
 #include "include/adcsim.h"
+#include "include/windsim.h"
+#include "include/avg_filter.h"
 #include <stdio.h>
 
 int main(void) {
-    init_io();
-    adc_init();
-
-    Timer_t T = {
-        0,
-        100
-    };
-
-    Timer_t T2 = {
-        0,
-        1000
-    };
+    Timer_t T = { 0,   100 };
+    Timer_t T2 = { 0, 1000 };
+    AVG_Filter_t Vin;
 
     output_t out;
     input_t in;
     out.leds = green;
     t_start(&T);
     t_start(&T2);
+    avgf_init(&Vin);
 
     while(1){
         set_outputs(&out);
@@ -31,6 +25,8 @@ int main(void) {
         adc_run();
         get_inputs(&in);
         adcsim_run();
+        windsim_run();
+        avgf_addSample(&Vin, in.vin);
 
         if(out.leds == green){
             out.leds = red;
@@ -41,7 +37,7 @@ int main(void) {
         };
 
         if(t_elapsed(&T2)){
-            printf("VIN: %d, VBAT: %d, VOUT: %d \n", in.vin, in.vbat, in.vout);
+            printf("VIN: %d, VBAT: %d, VOUT: %d \n", avgf_value(&Vin), in.vbat, in.vout);
             t_start(&T2);
         };
         //get_inputs(&in);

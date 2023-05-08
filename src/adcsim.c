@@ -1,7 +1,8 @@
+#include <stdint.h>
 #include "include/mem.h"
 #include "include/adc.h"
-#include <stdint.h>
-#define VIN (70)
+#include "include/windsim.h"
+
 #define VOUT (14)
 #define VBAT (12)
 
@@ -13,7 +14,7 @@ void adcsim_run(void){
         //printf("ADCON: %d\n", adcon);
         switch(channel){
             case ch_vin:
-                value = (VIN * 1024) / 150;
+                value = (windsim_getInputVoltage() * 1024) / 150;
                 break;
             case ch_vout:
                 value = (VOUT * 1024) / 15;
