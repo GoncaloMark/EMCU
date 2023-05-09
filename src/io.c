@@ -1,6 +1,6 @@
-/// \file   io.h
+/// \file   io.c
 /// \author Gonçalo Marques
-/// \date   2023-04
+/// \date   2023-05
 
 #include <stddef.h>
 #include "include/io.h"

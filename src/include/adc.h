@@ -19,8 +19,8 @@ typedef enum adc_channel {
     ch_vout = 5
 } adc_channel_t;
 
-/// @brief          - From a pointer to inputs, map the values to an inputs object that controls the state machine for the conversions; 
-/// @param inputs   - Pointer to the input object initialized on main.
+/// @brief          - From a pointer to inputs, copies value of analog inputs to passed parameter input_t that controls the state machine for the conversions; 
+/// @param inputs   - Pointer to the input struct where input values will be written to
 void get_inputs(input_t* inputs);
 
 /// @brief  - Init the ADC registers

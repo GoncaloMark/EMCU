@@ -1,4 +1,4 @@
-/// \file   iosim.h
+/// \file   adc.c
 /// \author Gonçalo Marques
 /// \date   2023-05
 
