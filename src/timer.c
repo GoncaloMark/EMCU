@@ -1,3 +1,7 @@
+/// \file   timer.c
+/// \author Gonçalo Marques
+/// \date   2023-05
+
 #include <time.h>
 #include <stdint.h>
 #include <stdbool.h>
