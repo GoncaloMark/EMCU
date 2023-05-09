@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdlib.h>
-#include "include/clock.h"
+#include "include/timer.h"
 
 typedef struct WIND {
     uint8_t AVG;        // Average Windspeed in m/s (0 to 20 ms/s)
@@ -78,16 +78,11 @@ void windsim_run(void)
     }
 
     // count seconds
-    if (t_elapsed(&t))
+    if (t_expired(&t))
     {
         if (remaining_seconds > 0) remaining_seconds--;
         t_start(&t);
     }
-
-    // change noise trend 4 times during each wind profile
-    uint16_t oneQuarter = (WIND_SIMULATION[sim_idx].DURATION * 60) / 4;
-    if (remaining_seconds % oneQuarter == 0)
-        changeNoiseTrend();
 
     // change wind profile
     if (remaining_seconds == 0)
@@ -96,6 +91,12 @@ void windsim_run(void)
         sim_idx %= sizeof(WIND_SIMULATION) / sizeof(WIND_t);
         remaining_seconds = WIND_SIMULATION[sim_idx].DURATION * 60;
     }
+
+        // change noise trend 4 times during each wind profile
+    uint16_t oneQuarter = (WIND_SIMULATION[sim_idx].DURATION * 60) / 4;
+    if ((remaining_seconds % oneQuarter) == 0)
+        changeNoiseTrend();
+
     uint16_t value = (WIND_SIMULATION[sim_idx].AVG * 150) / 20;
 
     vin = AddNoise(value);
