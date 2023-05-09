@@ -18,14 +18,14 @@ int main(void) {
     Timer_t logTimer;           // a timer to control log interval
     Timer_t chrono;             // a timer to measure execution time
     AVG_Filter_t Vin;           // average filter for input voltage readings
-    AVG_Filter_t execTime;      // average filter for input voltage readings
+    AVG_Filter_t execTime;      // average filter for executio time measurements
 
     output_t out;               // pcb outputs (leds and pwm control for Vout and Brake Resistor)
-    input_t  in;                // pcb inputs  (ADC Vin, Vbat, Vout)
+    input_t  in;                // pcb inputs  (ADC - Vin, Vbat, Vout)
     out.leds = green;
     cycleTimer.req_time = 100;  // 100ms control loop 
     t_start(&cycleTimer);       // start cycle timer
-    logTimer.req_time   = 1000; // 1s log interval
+    logTimer.req_time   = 200;  // 200ms log interval
     t_start(&logTimer);         // start log timer
     avgf_init(&Vin);            // initialize average filter for input voltage ADC measurements
     avgf_init(&execTime);       // initialize average filter for execution time measurements
@@ -35,7 +35,7 @@ int main(void) {
         t_start(&chrono);
         adc_run();                      // read input voltages from adc
         get_inputs(&in);                // get input values
-        avgf_addSample(&Vin, in.vin);   // 
+        avgf_addSample(&Vin, in.vin);
         set_outputs(&out);              // set leds
 
 
@@ -48,6 +48,13 @@ int main(void) {
             out.leds = green;
         };
 
+        // do something cpu intensive
+        for (int i = 0; i < 1000; i++)
+            for(int k = 0; k < 1000; k++)
+            {
+                if (avgf_value(&Vin) > 70000) out.leds = yellow;
+            }
+
         avgf_addSample(&execTime, (uint16_t)t_elapsed(&chrono));
 
         // run simulation code
@@ -56,7 +63,7 @@ int main(void) {
         windsim_run();
         // log status every logInterval
         if(t_expired(&logTimer)){
-            printf("VIN: %4.2f V, VBAT: %4.2f V, VOUT: %4.2f V, (Execution time average: %dms)\r", (float)(avgf_value(&Vin))/10, ((float)in.vbat) / 10, ((float)in.vout) / 10, avgf_value(&execTime));
+            printf("VIN: %4.2fV, VBAT: %4.2fV, VOUT: %4.2fV, (Execution time average: %d ms)\r", (float)(avgf_value(&Vin))/100, ((float)in.vbat) / 100, ((float)in.vout) / 100, avgf_value(&execTime));
             fflush(NULL);
             t_start(&logTimer);
         };

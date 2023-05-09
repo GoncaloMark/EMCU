@@ -15,8 +15,8 @@ typedef struct OUT {
 
 typedef struct IN {
     uint16_t vin;
-    uint8_t vbat;
-    uint8_t vout;
+    uint16_t vbat;
+    uint16_t vout;
 } input_t;
 
 typedef enum LEDS {

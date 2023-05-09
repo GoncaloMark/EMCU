@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include "include/timer.h"
 
+#define MAX_WIND     (20)   // maximum possible wind speed (in m/s)
+#define MAX_VOLTAGE (150)   // turbine voltage at maximum wind speed (in V)
+
 typedef struct WIND {
     uint8_t AVG;        // Average Windspeed in m/s (0 to 20 ms/s)
     uint8_t DEVIATION;  // Wind deviation from avg value (in %)
@@ -97,7 +100,7 @@ void windsim_run(void)
     if ((remaining_seconds % oneQuarter) == 0)
         changeNoiseTrend();
 
-    uint16_t value = (WIND_SIMULATION[sim_idx].AVG * 150) / 20;
+    uint16_t value = (WIND_SIMULATION[sim_idx].AVG * MAX_VOLTAGE) / MAX_WIND;
 
     vin = AddNoise(value);
 }

@@ -3,6 +3,15 @@
 #include "include/mem.h"
 #include <stdint.h>
 
+// Analog input constants
+#define VIN_MAX  (150)      // maximum voltage in Vin  - 150V
+#define VBAT_MAX  (15)      // maximum voltage in VBat -  15V
+#define VOUT_MAX  (15)      // maximum voltage in VOut -  15V
+
+// ADC constants
+#define ADC_BITS  (10)
+#define ADC_MAX   (1 << ADC_BITS)
+
 typedef enum states {
     set_channel,
     acq_time, 
@@ -19,13 +28,13 @@ static input_t inputs;
 void read_voltage(uint16_t adc_value){
     switch(current_channel){
         case ch_vin:
-            inputs.vin = (adc_value * 1500)/1024; //vin is in volts*10 (decivolt)
+            inputs.vin = (adc_value * VIN_MAX * 100) / ADC_MAX;
             break;
         case ch_vbat:
-            inputs.vbat = (adc_value *150)/1024;
+            inputs.vbat = (adc_value * VBAT_MAX * 100) / ADC_MAX;
             break;
         case ch_vout:
-            inputs.vout = (adc_value * 150)/1024;
+            inputs.vout = (adc_value * VOUT_MAX * 100) / ADC_MAX;
             break;
     };   
 };
