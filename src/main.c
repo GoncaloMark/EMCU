@@ -56,7 +56,7 @@ int main(void) {
         windsim_run();
         // log status every logInterval
         if(t_expired(&logTimer)){
-            printf("VIN: %d V, VBAT: %d V, VOUT: %d V, (Execution time average: %dms)\r", avgf_value(&Vin), in.vbat, in.vout, avgf_value(&execTime));
+            printf("VIN: %4.2f V, VBAT: %4.2f V, VOUT: %4.2f V, (Execution time average: %dms)\r", (float)(avgf_value(&Vin))/10, ((float)in.vbat) / 10, ((float)in.vout) / 10, avgf_value(&execTime));
             fflush(NULL);
             t_start(&logTimer);
         };
