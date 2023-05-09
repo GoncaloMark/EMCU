@@ -1,3 +1,7 @@
+/// \file   iosim.h
+/// \author Gonçalo Marques
+/// \date   2023-05
+
 #include <stdint.h>
 #include "include/mem.h"
 #include "include/adc.h"
