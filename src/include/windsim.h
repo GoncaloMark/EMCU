@@ -9,13 +9,13 @@
 #include <stdint.h>
 
 /// @brief Run Wind Simulation with the hardcoded wind profile
-/// @return input voltage level
-uint16_t windsim_run(uint16_t consumed_power);
+/// @return wind speed in cm/s (m/s * 100)
+uint16_t windsim_run(void);
 
-/// @brief Returns current windspeed in cm/s
+/// @brief Returns current windspeed in cm/s (m/s * 100)
 /// @return wind speed
 uint16_t windsim_windspeed(void);
 
-/// @brief Returns available wind power in cW
+/// @brief Returns available wind power in cW (W * 100)
 /// @return wind power
 uint16_t windsim_windpower(void);

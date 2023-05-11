@@ -4,7 +4,6 @@
 #include "include/adc.h"
 #include "include/adcsim.h"
 #include "include/windsim.h"
-#include "include/batsim.h"
 #include "include/avg_filter.h"
 #include <stdio.h>
 
@@ -30,7 +29,6 @@ int main(void) {
     t_start(&logTimer);         // start log timer
     avgf_init(&Vin);            // initialize average filter for input voltage ADC measurements
     avgf_init(&execTime);       // initialize average filter for execution time measurements
-    batsim_init();              // initialize battery simulation
 
     while(1){
         // run control code
@@ -62,7 +60,7 @@ int main(void) {
         // run simulation code
         iosim_run();
         adcsim_run();
-        windsim_run(batsim_run(in.vout));
+        windsim_run();
         // log status every logInterval
         if(t_expired(&logTimer)){
             printf("Wind Speed: %4.2f m/s, Wind Power Available: %4.2f W, VIN: %4.2fV, VBAT: %4.2fV, VOUT: %4.2fV, (Execution time average: %d ms)\r", ((float)windsim_windspeed()) / 100, ((float)windsim_windpower()) / 100, (float)(avgf_value(&Vin))/100, ((float)in.vbat) / 100, ((float)in.vout) / 100, avgf_value(&execTime));

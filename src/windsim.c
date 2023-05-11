@@ -86,7 +86,7 @@ static int16_t AddNoise(uint16_t value)
     return value + noise;
 }
 
-void windsim_run(uint16_t consumed_power)
+uint16_t windsim_run(void)
 {
 
     // initialize wind simulation
@@ -117,6 +117,7 @@ void windsim_run(uint16_t consumed_power)
         changeNoiseTrend();
 
     windspeed = AddNoise(WIND_PROFILE[sim_idx].AVG * 100);
+    return windspeed;
 }
 
 uint16_t windsim_windspeed(void)
