@@ -3,7 +3,9 @@
         "stdint.h": "c",
         "time.h": "c",
         "io.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "mem.h": "c",
+        "type_traits": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
