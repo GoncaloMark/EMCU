@@ -22,22 +22,21 @@
 #define VOLTAGE_TOLERANCE  (10)          // charge voltage admissible ripple in %
 #define TOLERANCE(V)       ((V * VOLTAGE_TOLERANCE) / 100)
 
-
-static uint64_t charge;                  // battery charge in uAh
-
-uint16_t batsim_charge() {
+static uint16_t soc(uint64_t charge) {
     return charge / (BAT_C * 100);
 }
 
-uint16_t batsim_voltage() {
+static uint16_t voltage(uint64_t charge) {
     return BAT_MIN_VOLTAGE + ((charge / (BAT_C * 10000)) * (BAT_MAX_VOLTAGE - BAT_MIN_VOLTAGE)) / 100;
 }
 
-void batsim_init() {
-    charge = ((BAT_START_CHARGE * BAT_C) / 100) * 1000000;
+void batsim_init(Battery_t* bat) {
+    bat->charge = ((BAT_START_CHARGE * BAT_C) / 100) * 1000000;
+    bat->voltage = voltage(bat->charge);
+    bat->soc     = soc(bat->charge);
 }
 
-uint16_t batsim_run(uint16_t vcharge) {
+uint32_t batsim_run(Battery_t* bat, uint16_t vcharge) {
     static uint8_t warned = false;
 
     if ((vcharge > (BAT_CHARGE_VOLTAGE + TOLERANCE(BAT_CHARGE_VOLTAGE))) && (!warned)) {
@@ -55,13 +54,16 @@ uint16_t batsim_run(uint16_t vcharge) {
 
     // calculate charge current in mA
     // vcharge (V) * 0.1 * BAT_C (A) / BAT_CHARGE_VOLTAGE (V) would be current in Amps
-    uint16_t current_mA = (((uint32_t)vcharge) * BAT_C) / (BAT_CHARGE_VOLTAGE / 100);
+    uint32_t current_mA = (((uint32_t)vcharge - bat->voltage) * BAT_C) / ((BAT_CHARGE_VOLTAGE / 100) - BAT_VOLTAGE);
     // calculate Ah - current * time (in hours)
     uint32_t charged_uAh = (current_mA * BAT_SIM_CALL_RATE_ms) / 3600;     // mA * ms / (s/h) = uAh
-    charge += charged_uAh;                                                 // add charged current to battery
+    bat->charge += charged_uAh;                                             // add charged current to battery
+    bat->voltage = voltage(bat->charge);
+    bat->soc = soc(bat->charge);
+
     // limit charge to maximum
-    if (charge > (BAT_C * 1000000))
-      charge = (BAT_C * 1000000);
+    if (bat->charge > (BAT_C * 1000000))
+      bat->charge = (BAT_C * 1000000);
     // return consumed power in W
-    return (BAT_VOLTAGE * current_mA) / 1000;       
+    return (vcharge * current_mA) / (1000 * 100);       
 }

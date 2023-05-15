@@ -82,7 +82,7 @@ void turbinesim_run(Turbine_t *t, uint32_t consumedPower) {
             uint32_t current_mA = (consumedPower * 100 * 1000) / t->vout;
             // calculate output voltage from power generated with consumed current
             uint16_t vout = (t->genpower * 1000) / current_mA;
-            // calculate turbine rpm with generated power minus consumed power
+            // calculate turbine rpm with calculated voltage
             rpm = VOLT_TO_RPM(vout);
         }
         // generate electrical power from wind = turbine efficiency * wind power
