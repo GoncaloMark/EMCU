@@ -54,7 +54,7 @@ uint16_t batsim_run(uint16_t vcharge) {
     }
 
     // calculate charge current in mA
-    // vcharge * 0.1 * BAT_C / BAT_CHARGE_VOLTAGE would be current in Amps
+    // vcharge (V) * 0.1 * BAT_C (A) / BAT_CHARGE_VOLTAGE (V) would be current in Amps
     uint16_t current_mA = (((uint32_t)vcharge) * BAT_C) / (BAT_CHARGE_VOLTAGE / 100);
     // calculate Ah - current * time (in hours)
     uint32_t charged_uAh = (current_mA * BAT_SIM_CALL_RATE_ms) / 3600;     // mA * ms / (s/h) = uAh

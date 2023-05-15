@@ -5,12 +5,9 @@
 #include <stdint.h>
 #include "include/mem.h"
 #include "include/adc.h"
-#include "include/windsim.h"
+#include "include/batsim.h"
 
-#define VOUT (14)
-#define VBAT (12)
-
-void adcsim_run(void){
+void adcsim_run(uint16_t vin, uint16_t vout, uint16_t vbat) {
     uint8_t adcon = read_reg(ADCON0_ADD);
     uint8_t channel = adcon >> 2;
     uint16_t value = 0;
@@ -18,13 +15,13 @@ void adcsim_run(void){
         //printf("ADCON: %d\n", adcon);
         switch(channel){
             case ch_vin:
-                //value = (windsim_getInputVoltage() * 1024) / 150;
+                value = (vin * 1024) / 15000;
                 break;
             case ch_vout:
-                value = (VOUT * 1024) / 15;
+                value = (vout * 1024) / 1500;
                 break;
             case ch_vbat:
-                value = (VBAT * 1024) / 15;
+                value = (vbat * 1024) / 1500;
                 break;
         }
 
