@@ -71,7 +71,7 @@ int main(void) {
         // run adc simulation
         adcsim_run(t.vout, out.vout, b.voltage);         // Vin = Turbine.Vout, Vout = Vin * PWM DuttyCycle, Vbat = Battery.Voltage
         // run battery simulation
-        uint32_t active_power = batsim_run(&b,in.vout);  // simulated battery charges with generated output voltage
+        uint32_t active_power = batsim_run(&b, in.vout);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
         acc_power += (active_power * BAT_SIM_CALL_RATE_ms) / 3600;
         // TODO: run brake sim and calculate dissipated power in the brake
         // run wind turbine simulation
