@@ -4,6 +4,7 @@
 #include "include/adc.h"
 #include "include/adcsim.h"
 #include "include/windsim.h"
+#include "include/batsim.h"
 #include "include/avg_filter.h"
 #include <stdio.h>
 
@@ -19,6 +20,9 @@ int main(void) {
     Timer_t chrono;             // a timer to measure execution time
     AVG_Filter_t Vin;           // average filter for input voltage readings
     AVG_Filter_t execTime;      // average filter for executio time measurements
+    uint16_t active_power;      // power used to charge the battery in this cycle
+    uint32_t acc_power = 0;     // total power charged to the battery in cWh (Wh * 100)
+    
 
     output_t out;               // pcb outputs (leds and pwm control for Vout and Brake Resistor)
     input_t  in;                // pcb inputs  (ADC - Vin, Vbat, Vout)
@@ -29,15 +33,17 @@ int main(void) {
     t_start(&logTimer);         // start log timer
     avgf_init(&Vin);            // initialize average filter for input voltage ADC measurements
     avgf_init(&execTime);       // initialize average filter for execution time measurements
+    batsim_init();              // initialize battery simulation
 
     while(1){
         // run control code
         t_start(&chrono);
-        adc_run();                      // read input voltages from adc
-        get_inputs(&in);                // get input values
+        adc_run();                           // run adc to convert input voltages
+        get_inputs(&in);                     // get input values
         avgf_addSample(&Vin, in.vin);
-        set_outputs(&out);              // set leds
-
+        set_outputs(&out);                   // set leds
+        active_power = batsim_run(in.vout);  // simulated battery charges with generated output voltage
+        acc_power += (active_power * BAT_SIM_CALL_RATE_ms) / 1000;
 
         // cycle led lights while control for them is not implemented
         if(out.leds == green){
@@ -48,7 +54,7 @@ int main(void) {
             out.leds = green;
         };
 
-        // do something cpu intensive
+        // do something cpu intensive only so that execution time is greater than 0
         for (int i = 0; i < 1000; i++)
             for(int k = 0; k < 1000; k++)
             {
@@ -63,7 +69,7 @@ int main(void) {
         windsim_run();
         // log status every logInterval
         if(t_expired(&logTimer)){
-            printf("VIN: %4.2fV, VBAT: %4.2fV, VOUT: %4.2fV, (Execution time average: %d ms)\r", (float)(avgf_value(&Vin))/100, ((float)in.vbat) / 100, ((float)in.vout) / 100, avgf_value(&execTime));
+            printf(" WS: %4.2f m/s, WindPower: %5.2f W, VIN: %4.2fV, VBAT: %4.2fV, VOUT: %4.2fV, Active Power: %4.2f W, Stored Power: %4.2f Wh (Execution time average: %d ms) \r", ((float)windsim_windspeed()) / 100, ((float)windsim_windpower()) / 100, (float)(avgf_value(&Vin))/100, ((float)in.vbat) / 100, ((float)in.vout) / 100, ((float)active_power) / 100, ((float)acc_power) / 100, avgf_value(&execTime));
             fflush(NULL);
             t_start(&logTimer);
         };

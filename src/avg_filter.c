@@ -1,3 +1,7 @@
+/// \file   avg_filter.c
+/// \author Bernardo Marques
+/// \date   2023-05
+
 #include <stddef.h>
 #include "include/avg_filter.h"
 

@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "stdint.h": "c",
-        "time.h": "c",
-        "io.h": "c",
-        "stdio.h": "c"
-    },
-    "C_Cpp.errorSquiggles": "disabled"
-}
