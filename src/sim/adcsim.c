@@ -15,9 +15,8 @@ void adcsim_run(uint16_t vin, uint16_t vbat) {
     // TODO: calculate output voltage from PWM registers and Vin - for now turbine is directly connected to the battery just as the real turbine
     uint16_t vout = vin;
 
-    if(adcon & 2){
-        //printf("ADCON: %d\n", adcon);
-        switch(channel){
+    if(adcon & 2) {
+        switch(channel) {
             case ch_vin:
                 value = (vin * 1024) / 15000;
                 break;
