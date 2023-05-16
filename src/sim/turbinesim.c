@@ -67,14 +67,15 @@ void turbinesim_run(Turbine_t *t, uint32_t consumedPower) {
     if (t->windspeed < MIN_WIND) {
         t->genpower = 0;
     } else {
-        // if no power is being consumed calculate turbine speed from TSR
-        if (consumedPower == 0 || (t->vout == 0)) {
-            if (t->windspeed <= LOW_WIND)
-                rpm = (60 * t->windspeed * LOW_WIND_TSR) / (PI * ROTOR_DIAM);
-            else
-                rpm = (60 * t->windspeed * HIGH_WIND_TSR) / (PI * ROTOR_DIAM);
-        } else {
-            // power is being drawn from the turbine - calculate voltage and current
+        
+        // calculate turbine speed derived from windspeed and TSR
+        if (t->windspeed <= LOW_WIND)
+            rpm = (60 * t->windspeed * LOW_WIND_TSR) / (PI * ROTOR_DIAM);
+        else
+            rpm = (60 * t->windspeed * HIGH_WIND_TSR) / (PI * ROTOR_DIAM);
+
+        // if power is being consumed calculate speed from power consumption
+        if (consumedPower != 0 && t->vout != 0) {
             // P = V * I
             // voltage is proportional to speed
             // current is proportional to torque - requiring force from turbine, similar to braking
@@ -83,10 +84,14 @@ void turbinesim_run(Turbine_t *t, uint32_t consumedPower) {
             // calculate output voltage from power generated with consumed current
             uint16_t vout = (t->genpower * 1000) / current_mA;
             // calculate turbine rpm with calculated voltage
-            rpm = VOLT_TO_RPM(vout);
+            if (VOLT_TO_RPM(vout) < rpm)
+                rpm = VOLT_TO_RPM(vout);
         }
         // generate electrical power from wind = turbine efficiency * wind power
         t->genpower  = (t->windpower * TURBINE_EFF) / 100;
+        // limit generated power to turbine maximum - 5kW
+        if (t->genpower > 5000)
+            t->genpower = 5000;
     }
 
     avgf_addSample(&rpm_filter, rpm);
@@ -97,7 +102,7 @@ void turbinesim_run(Turbine_t *t, uint32_t consumedPower) {
     static uint8_t warned = false;
 
     if (t->rpm > MAX_RPM && (!warned)) {
-        printf("\n *** WARNING: Turbine is rotating too fast, risk of mechanical damage to the turbine and excessive input voltage ***\n");
+        printf("\n *** WARNING: Turbine is rotating too fast (%d rpm), risk of mechanical damage to the turbine and excessive input voltage ***\n", t->rpm);
         warned = true;
     } else if(t->rpm < (MAX_RPM - TOLERANCE(MAX_RPM))) {
         warned = false;
@@ -105,7 +110,7 @@ void turbinesim_run(Turbine_t *t, uint32_t consumedPower) {
 
     if (t->rpm > (MAX_RPM + TOLERANCE(MAX_RPM)))
     {
-        printf("\n *** ERROR: Turbine rotation too fast. Turbine broken by excessive mechanical force and converter destroyed by excessive voltage. ***\n");
+        printf("\n *** ERROR: Turbine rotation too fast (%d rpm). Turbine broken by excessive mechanical force and converter destroyed by excessive voltage. ***\n", t->rpm);
         printf("\n \t- try to brake the turbine before it breaks \n");
         exit(-1);
     }

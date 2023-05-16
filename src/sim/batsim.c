@@ -40,7 +40,7 @@ uint32_t batsim_run(Battery_t* bat, uint16_t vcharge) {
     static uint8_t warned = false;
 
     if ((vcharge > (BAT_CHARGE_VOLTAGE + TOLERANCE(BAT_CHARGE_VOLTAGE))) && (!warned)) {
-        printf("\n *** WARNING: Battery charge voltage too high, risk of causing flamable fumes and damage to the battery ***\n");
+        printf("\n *** WARNING: Battery charge voltage too high (%4.2f V), risk of causing flamable fumes and damage to the battery ***\n", (float)vcharge / 100);
         warned = true;
     } else if(vcharge < BAT_CHARGE_VOLTAGE) {
         warned = false;
@@ -48,9 +48,12 @@ uint32_t batsim_run(Battery_t* bat, uint16_t vcharge) {
 
     if (vcharge > BAT_VOLTAGE_LIMIT + TOLERANCE(BAT_VOLTAGE_LIMIT))
     {
-        printf("\n *** ERROR: Voltage too high. Battery exploded, melted, burned, is no longer usable. ***\n");
+        printf("\n *** ERROR: Voltage too high (%4.2f V). Battery exploded, melted, burned, is no longer usable. ***\n", (float)vcharge / 100);
         exit(-1);
     }
+
+    if (vcharge < bat->voltage) // battery only charges with voltage higher than battery voltage
+        return 0;
 
     // calculate charge current in mA
     // vcharge (V) * 0.1 * BAT_C (A) / BAT_CHARGE_VOLTAGE (V) would be current in Amps
