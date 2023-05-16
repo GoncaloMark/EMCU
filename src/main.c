@@ -68,7 +68,7 @@ int main(void) {
         adcsim_run(t.vout, b.voltage);         // Vin = Turbine.Vout, Vbat = Battery.Voltage
 
         // run battery simulation
-        uint32_t active_power = batsim_run(&b, out.vout);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
+        uint32_t active_power = batsim_run(&b, in.vout);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
         acc_power += (active_power * BAT_SIM_CALL_RATE_ms) / 3600;
         // run brake simulation
         uint32_t wasted_power = brakesim_run(in.vin);
