@@ -26,13 +26,13 @@ uint32_t brakesim_run(uint16_t vin) {
 
     if (power > BRAKE_POWER_RATING && !warned) {
         warned = true;
-        printf("*** WARNING: Brake power too high (%d W), risk of burning brake resistor ***", power);
+        printf("\n*** WARNING: Brake power too high (%d W), risk of burning brake resistor ***\n", power);
     } else if (power < (BRAKE_POWER_RATING - TOLERANCE)) {
         warned = false;
     }
 
     if (power > BRAKE_POWER_RATING + TOLERANCE) {
-        printf("*** ERROR: Brake resistor burned due to high power (%d W). Brake resistor no longer working. ***", power);
+        printf("\n*** ERROR: Brake resistor burned due to high power (%d W). Brake resistor no longer working. ***\n", power);
         resistor_ok = false;
     }
 
