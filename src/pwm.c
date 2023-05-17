@@ -5,9 +5,6 @@
 #include "include/pwm.h"
 #include "include/mem.h"
 
-#define PWM_RES_BIT (10)
-#define PWM_MAX ((1 << PWM_RES_BIT) - 1)
-
 static uint16_t value = 0;
 static uint16_t value2 = 0;
 
@@ -31,7 +28,7 @@ void pwm_scan(inputs_t* inputs, outputs_t* outputs){
     reg_write(PWM6DCH_ADD, ((brake_val >> 2) & 0xFF)); // Set MSB (duty cycle)
     reg_write(PWM6DCL_ADD, (brake_val & 0x3)); // Set LSB (duty cycle)
 
-    uint16_t vout_val = ((outputs->vout + 70) * PWM_MAX) / (inputs->vin);
+    uint16_t vout_val = (outputs->vout * PWM_MAX) / (inputs->vin);
     reg_write(PWM5DCH_ADD, ((vout_val >> 2) & 0xFF)); // Set MSB (duty cycle)
     reg_write(PWM5DCL_ADD, (vout_val &0x3)); // Set LSB (duty cycle)
 };

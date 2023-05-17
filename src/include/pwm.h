@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include "include/io.h"
 
+#define PWM_RES_BIT (10)
+#define PWM_MAX ((1 << PWM_RES_BIT) - 1)
 #define TRISC_ADD (0x008E)
 #define PWM5CON_ADD (0x0619)
 #define PR2_ADD (0x001E)
