@@ -5,27 +5,33 @@
 #include "include/pwm.h"
 #include "include/mem.h"
 
-static unsigned float value = 0;
+#define PWM_RES_BIT (10)
+#define PWM_MAX ((1 << PWM_RES_BIT) - 1)
+
+static uint16_t value = 0;
+static uint16_t value2 = 0;
 
 void pwm_init(void){
-    write_reg(PWMCON5_ADD, 0x0008); // Set Polarity
-    write_reg(PR2_ADD, 0xFF); // Set Period
-    write_reg(PWM5DCH_ADD, ((value >> 2) & 0xFF)); // Set MSB (duty cycle)
-    write_reg(PWM5DCL_ADD, (value & 0x3)); // Set LSB (duty cycle)
+    reg_write(PWMCON5_ADD, 0x0008); // Set Polarity
 
-    write_reg(PIR1_ADD, 0x13); // Clear TMRF2 flag
-    write_reg(T2CON_ADD, 0x0001); // Timer prescale value, it affects the frequency of the PWM signal
-    write_reg(T2CON_ADD, 0x0004); // Enable Timer 2 
+    reg_write(PWMCON6_ADD, 0x0008); // Set Polarity
 
-    while(!(read_reg(PIR1_ADD) & 0x2)); // Wait for TIMER2IF Overflow Interrupt to be set
+    reg_write(PR2_ADD, 0xFF); // Set Period
+    reg_write(T2CON_ADD, 0x0004); // Enable Timer 2 
 
-    write_reg(TRISC_ADD, 0x0003); // Enable RC0 and RC1 pins
-    write_reg(RC1PPS_ADD, 0x0002); // Set RC1 Peripheral Pin Select
+    reg_set(TRISC_ADD, 0x0003); // Enable RC0 (BRAKE) and RC1 (VOUT) pins
+    reg_write(RC1PPS_ADD, 0x0002); // Set RC1 Peripheral Pin Select
+    reg_write(RC0PPS_ADD, 0x0003); // Set RC0 Peripheral Pin Select
 
-    write_reg(PWM5CON_ADD, 0x0040); // Enable the PWM module
+    reg_write(PWM5CON_ADD, 0x0040); // Enable the PWM module
 };
 
-void pwm_set_duty(uint8_t duty){
-    unsigned float duty_p = duty / 100;
-    value = duty_p * 1023;
+void pwm_scan(inputs_t* inputs, outputs_t* outputs){
+    uint16_t brake_val = (outputs->brake * PWM_MAX) / (100*100);
+    reg_write(PWM6DCH_ADD, ((brake_val >> 2) & 0xFF)); // Set MSB (duty cycle)
+    reg_write(PWM6DCL_ADD, (brake_val & 0x3)); // Set LSB (duty cycle)
+
+    uint16_t vout_val = ((outputs->vout + 70) * PWM_MAX) / (inputs->vin);
+    reg_write(PWM5DCH_ADD, ((vout_val >> 2) & 0xFF)); // Set MSB (duty cycle)
+    reg_write(PWM5DCL_ADD, (vout_val &0x3)); // Set LSB (duty cycle)
 };

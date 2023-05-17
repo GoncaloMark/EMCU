@@ -4,6 +4,7 @@
 
 #pragma once
 #include <stdint.h>
+#include "include/io.h"
 
 #define TRISC_ADD (0x008E)
 #define PWM5CON_ADD (0x0619)
@@ -15,4 +16,4 @@
 #define RC1PPS_ADD (0x0EA1)
 
 void pwm_init(void);
-void pwm_set_duty(uint8_t duty);
+void pwm_scan(inputs_t* inputs, outputs_t* outputs);

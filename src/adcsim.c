@@ -11,7 +11,7 @@
 #define VBAT (12)
 
 void adcsim_run(void){
-    uint8_t adcon = read_reg(ADCON0_ADD);
+    uint8_t adcon = reg_read(ADCON0_ADD);
     uint8_t channel = adcon >> 2;
     uint16_t value = 0;
     if(adcon & 2){
@@ -28,9 +28,9 @@ void adcsim_run(void){
                 break;
         }
 
-        write_reg(ADRESL_ADD, value);
-        write_reg(ADRESH_ADD, value>>8);
-        write_reg(ADCON0_ADD, adcon & (~0x2));
+        reg_write(ADRESL_ADD, value);
+        reg_write(ADRESH_ADD, value>>8);
+        reg_write(ADCON0_ADD, adcon & (~0x2));
         //printf("ADC CHANNEL: %d, VALUE: %d\n", channel, value);
     }
 }

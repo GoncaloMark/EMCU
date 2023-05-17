@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 typedef struct OUT {
-    uint8_t brake;
-    uint8_t vout;
+    uint16_t brake;
+    uint16_t vout;
     uint8_t leds;
 } output_t;
 
