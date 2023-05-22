@@ -23,7 +23,8 @@ void batsim_init(Battery_t* bat);
 /// \brief Battery Simulation - charges the battery and returns consumed power (in Watts) 
 /// \param bat     the battery to be charged
 /// \param vcharge battery charge voltage
+/// \param available_power maximum power available on the charge voltage source
 /// \return consumed power
-uint32_t batsim_run(Battery_t* bat, uint16_t vcharge);
+uint32_t batsim_run(Battery_t* bat, uint16_t vcharge, uint32_t avilable_power);
 
 

@@ -35,7 +35,7 @@ int main(void) {
     out.leds = green;
     cycleTimer.req_time = 100;  // 100ms control loop 
     t_start(&cycleTimer);       // start cycle timer
-    logTimer.req_time   = 200;  // 200ms log interval
+    logTimer.req_time   = 100;  // 200ms log interval
     t_start(&logTimer);         // start log timer
     avgf_init(&Vin);            // initialize average filter for input voltage ADC measurements
     avgf_init(&execTime);       // initialize average filter for execution time measurements
@@ -68,7 +68,7 @@ int main(void) {
         adcsim_run(t.vout, b.voltage);         // Vin = Turbine.Vout, Vbat = Battery.Voltage
 
         // run battery simulation
-        uint32_t active_power = batsim_run(&b, in.vout);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
+        uint32_t active_power = batsim_run(&b, in.vout, t.genpower);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
         acc_power += (active_power * BAT_SIM_CALL_RATE_ms) / 3600;
         // run brake simulation
         uint32_t wasted_power = brakesim_run(in.vin);
@@ -76,11 +76,11 @@ int main(void) {
         // run wind turbine simulation
         turbinesim_run(&t, active_power + wasted_power);
         // log status every logInterval
-        if(t_expired(&logTimer)){
-            printf(" WS: %4.2f m/s, WP: %4.2f kW, GP: %3.2f kW, RPM: %4d, VIN: %5.2fV, VBAT: %4.2fV, VOUT: %4.2fV, Active Power: %4d W, Stored Power: %4d Wh, Bat: %4.2f%%  \r", ((float)t.windspeed) / 100, ((float)t.windpower) / 1000, ((float)t.genpower) / 1000, t.rpm, ((float)t.vout) / 100, ((float)in.vbat) / 100, ((float)in.vout) / 100, active_power, acc_power / 1000, (float)b.soc / 100);
+        //if(t_expired(&logTimer)){
+            printf(" WS: %4.2f m/s, WP: %4.2f kW, GP: %3.2f kW, RPM: %4d, VIN: %5.2fV, VBAT: %4.2fV, VOUT: %4.2fV, Active Power: %4d W, Stored Power: %4d Wh, Bat: %4.2f%%  \n", ((float)t.windspeed) / 100, ((float)t.windpower) / 1000, ((float)t.genpower) / 1000, t.rpm, ((float)t.vout) / 100, ((float)in.vbat) / 100, ((float)in.vout) / 100, active_power, acc_power / 1000, (float)b.soc / 100);
             fflush(NULL);
             t_start(&logTimer);
-        };
+        //};
 
         while(!t_expired(&cycleTimer)) 
         {

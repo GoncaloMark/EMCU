@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 
-#define AVG_FILTER_DEPTH (30)
+#define AVG_FILTER_DEPTH (100)
 
 /// \brief Average Filter - A filter to calculate the average of the last AVG_FILTER_DEPTH samples
 typedef struct AVG_F {
