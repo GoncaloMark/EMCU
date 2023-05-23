@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+// ACG_FILTER_DETH needs to be defined in each c file that includes avg_filter.h
+
 
 /// \brief Average Filter - A filter to calculate the average of the last AVG_FILTER_DEPTH samples
 typedef struct AVG_F {

@@ -16,8 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "util/include/avg_filter.h"
 #include "include/windsim.h"
-#include "include/avg_filter.h"
 #include "include/turbinesim.h"
 
 // constants

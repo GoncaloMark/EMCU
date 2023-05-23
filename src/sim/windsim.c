@@ -8,8 +8,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdlib.h>
-#include "include/timer.h"
-#include "include/avg_filter.h"
+#include "drivers/include/timer.h"
+#include "util/include/avg_filter.h"
 
 typedef struct WIND {
     uint8_t AVG;        // Average Windspeed in m/s (0 to 20 ms/s)
