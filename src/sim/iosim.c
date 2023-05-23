@@ -13,7 +13,7 @@ static output_t out;
 void iosim_run(void){
     static uint8_t previous = 0;
     //printf("previous: %d \n", previous);
-    out.leds = read_reg(LATC_ADD) & (red | green | yellow);
+    out.leds = reg_read(LATC_ADD) & (red | green | yellow);
     if(out.leds != previous){
         //printf("LEDS: %d\n", out.leds);
         previous = out.leds;

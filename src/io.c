@@ -11,16 +11,16 @@
 // io.c
 
 void init_io(void) {
-    write_reg(LATC_ADD, 0x0);
-    write_reg(TRISC_ADD, 0x7);
+    reg_write(LATC_ADD, 0x0);
+    reg_set(TRISC_ADD, 0x7);
 }
 
 void set_outputs(output_t* outputs){
     if(outputs == NULL) return;
 
-    uint8_t read_out = read_reg(LATC_ADD);
+    uint8_t read_out = reg_read(LATC_ADD);
     read_out &= ~(green | red | yellow );
     read_out |= (outputs->leds & (green | red | yellow));
-    write_reg(LATC_ADD, read_out);
+    reg_write(LATC_ADD, read_out);
     //printf("read_out: %d", read_out);
 }

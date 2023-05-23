@@ -53,10 +53,7 @@ uint32_t batsim_run(Battery_t* bat, uint16_t vcharge, uint32_t available_power) 
     }
 
     if (vcharge < bat->voltage) // battery only charges with voltage higher than battery voltage
-    {
-        printf("Consumed Power: 0 W (%f V / 0 A)\n", ((float)vcharge) / 100);
         return 0;
-    }
 
     // calculate charge current in mA
     // Battery current is 0.1 * BAT_C for a voltage difference of BAT_CHARGE_VOLTAGE - BAT_VOLTAGE
@@ -75,8 +72,6 @@ uint32_t batsim_run(Battery_t* bat, uint16_t vcharge, uint32_t available_power) 
     
     bat->voltage = voltage(bat->charge);
     bat->soc = soc(bat->charge);
-
-    printf("Consumed Power: %d W (%f V / %f A)\n", (vcharge * current_mA) / (1000 * 100) + 1, ((float)vcharge) / 100, ((float) current_mA) / 1000);
     
     // return consumed power in W
     return (vcharge * current_mA) / (1000 * 100) + 1;       

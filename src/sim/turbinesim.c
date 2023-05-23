@@ -10,6 +10,8 @@
 /// https://drive.google.com/file/d/1lSoAM47hA4uERMrflJ-tpXlLmjjHVzff/view
 ///
 
+#define AVG_FILTER_DEPTH  (300)
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -144,8 +146,7 @@ void turbinesim_run(Turbine_t *t, uint32_t consumedPower) {
     if (consumedPower > t->genpower) consumedPower = t->genpower;                           // not possible to consume more than is generated
     uint16_t accell = (((uint32_t)t->genpower - consumedPower) * 100 * 100) / t->genpower;  // power percentage left for accelerating (in % * 100)
     uint16_t brake  = (100 * 100) - accell;                                                 // power percentage spent braking (in % *100)
-    uint16_t rpm = 0;
-    if (brake > 0) rpm = (t->rpm * 100) / brake;                                            // turbine rotation is reduced by consumed power
+    uint16_t rpm = t->rpm - (t->rpm * brake) / (100 * 100);                                 // turbine rotation is reduced by consumed power
     p.rpm = rpm + (p.rpm * accell) / (100 * 100);                                           // turbine accelerates while no power is being consumed
   }
   

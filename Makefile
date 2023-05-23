@@ -1,7 +1,7 @@
 OUTPUT_DIR := Debug
 OUTPUT_FILE := ${OUTPUT_DIR}/emcu
 
-C_SRC := src/main.c src/io.c src/mem.c src/timer.c src/adc.c src/avg_filter.c
+C_SRC := src/main.c src/io.c src/mem.c src/timer.c src/adc.c src/avg_filter.c src/pwm.c
 C_SIM_SRC := src/sim/iosim.c src/sim/adcsim.c src/sim/windsim.c src/sim/batsim.c src/sim/turbinesim.c src/sim/brakesim.c
 
 SOURCES := ${C_SIM_SRC} ${C_SRC}
