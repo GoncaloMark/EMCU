@@ -21,5 +21,11 @@
 #define RC1PPS_ADD (0x0EA1)
 #define RC0PPS_ADD (0x0EA0)
 
+/// @brief          - A function to initialize the PWM Registers
+/// @param          - void
 void pwm_init(void);
+
+/// @brief          - A function to run the PWM module (sets duty cycle based on the brake value and on the desired output voltage) and starts the wave modulation
+/// @param inputs   - Input parameters for the PWM module (for example vin)
+/// @param outputs  - Output values for the PWM module (for example brake or vout)
 void pwm_run(input_t* inputs, output_t* outputs);
