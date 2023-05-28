@@ -1,6 +1,7 @@
 # EMCU
 
 This is:
+
     - a Wind Turbine / Battery / Brake Resistor simulator
     - a custom made PCB (that uses a Pic16F18324) emulator (emulating ADC, PWM and digital outputs)
     - control software fo the Wind Turbine Controller PCB being emulated
