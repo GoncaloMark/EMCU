@@ -4,7 +4,7 @@ This is:
 
     - a Wind Turbine / Battery / Brake Resistor simulator
     - a Pic16F18324 uController emulator (emulating ADC, PWM, Timers and digital outputs)
-    - control software fo the Wind Turbine Controller PCB being emulated
+    - control software for the Wind Turbine Controller PCB being emulated
 
 Sometime in 2022 we installed a small homescale Wind Turbine (5kW) in a remote location that already had solar pannels and batteries installed. The Wind Turbine was meant to provide extra power production capacity but to our dismay and disbelief it never produced any noticeable energy. We experimented with the turbine and studied the problem, trying to both understand and resolve it, we ended up figuring that the non-produced power was due to the controller and battery voltage.
 The controller shipped along with the turbine was a simple, analog circuit with triacs and thyristors to connect any excess voltage to the braking resistor, convert three phase AC to DC and connect the DC voltage directly to the battery.
