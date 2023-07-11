@@ -36,7 +36,7 @@ void batsim_init(Battery_t* bat) {
     bat->soc     = soc(bat->charge);
 }
 
-uint32_t batsim_run(Battery_t* bat, uint16_t vcharge) {
+uint32_t batsim_run(Battery_t* bat, uint16_t vcharge, uint32_t available_power) {
     static uint8_t warned = false;
 
     if ((vcharge > (BAT_CHARGE_VOLTAGE + TOLERANCE(BAT_CHARGE_VOLTAGE))) && (!warned)) {
@@ -58,6 +58,11 @@ uint32_t batsim_run(Battery_t* bat, uint16_t vcharge) {
     // calculate charge current in mA
     // Battery current is 0.1 * BAT_C for a voltage difference of BAT_CHARGE_VOLTAGE - BAT_VOLTAGE
     uint32_t current_mA = (((uint32_t)vcharge - bat->voltage) * BAT_C) / ((BAT_CHARGE_VOLTAGE / 100) - BAT_VOLTAGE);
+
+    // current is limited by available power
+    uint32_t maxCurrent_mA = (available_power * 100 * 1000) / vcharge;
+    if (current_mA > maxCurrent_mA)
+      current_mA = maxCurrent_mA;
     // calculate Ah - current * time (in hours)
     uint32_t charged_uAh = (current_mA * BAT_SIM_CALL_RATE_ms) / 3600;     // mA * ms / (s/h) = uAh
     bat->charge += charged_uAh;                                             // add charged current to battery
@@ -69,5 +74,5 @@ uint32_t batsim_run(Battery_t* bat, uint16_t vcharge) {
     bat->soc = soc(bat->charge);
     
     // return consumed power in W
-    return (vcharge * current_mA) / (1000 * 100);       
+    return (vcharge * current_mA) / (1000 * 100) + 1;       
 }

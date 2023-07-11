@@ -15,4 +15,4 @@
 /// \brief Brake Simulation - returns the value for input voltage affected by brake value
 /// \param vin    - current value for input voltage
 /// \return       - power consumed by the brake resistor
-uint32_t brakesim_run(uint16_t vin);
+uint32_t brakesim_run(uint16_t vin, uint16_t brake_pwm);
