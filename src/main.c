@@ -3,11 +3,13 @@
 #include "include/timer.h"
 #include "include/adc.h"
 #include "include/avg_filter.h"
+#include "include/pwm.h"
 #include "sim/include/iosim.h"
 #include "sim/include/adcsim.h"
 #include "sim/include/batsim.h"
 #include "sim/include/brakesim.h"
 #include "sim/include/turbinesim.h"
+
 
 static Turbine_t t;
 static Battery_t b;
@@ -41,7 +43,8 @@ int main(void) {
     avgf_init(&execTime);       // initialize average filter for execution time measurements
     turbinesim_init(&t);        // initialize turbine simulation
     batsim_init(&b);            // initialize battery simulation
-
+    pwm_init();                 // initialize pwm registers
+    
     while(1){
         // run control code
         t_start(&chrono);
@@ -49,6 +52,13 @@ int main(void) {
         get_inputs(&in);                     // get input values
         avgf_addSample(&Vin, in.vin);
         set_outputs(&out);                   // set leds
+        pwm_run(&in, &out);                 // run pwm
+
+        if(in.vin > 10000){
+            out.vout = 1200;
+        } else {
+            out.vout = 0;
+        }
 
         // cycle led lights while control for them is not implemented
         if(out.leds == green){

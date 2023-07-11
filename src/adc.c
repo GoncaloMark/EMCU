@@ -64,19 +64,19 @@ void change_channel(void){
 };
 
 void adc_init(void){
-    write_reg(TRISA_ADD, 0x0034);
-    write_reg(ANSELA_ADD, 0x0034);
-    write_reg(ADCON1_ADD, (5 << 4)); //Clock source FOSC/16 4MHz clock 4 ys
-    write_reg(ADCON0_ADD, 0x0001 | (ch_vin << 2)); //turn on ADON and select channel 2.
+    reg_set(TRISA_ADD, 0x0034);
+    reg_write(ANSELA_ADD, 0x0034);
+    reg_write(ADCON1_ADD, (6 << 4)); //Clock source FOSC/64, 32MHz clock, 2 us conversion time
+    reg_write(ADCON0_ADD, 0x0001 | (ch_vin << 2)); //turn on ADON and select channel 2.
 };
 
 void adc_run(void){
     uint8_t conv;
-    uint8_t adcon = read_reg(ADCON0_ADD);
+    uint8_t adcon = reg_read(ADCON0_ADD);
     static states_t old_state = set_channel;
     switch(state) {
         case set_channel:
-            write_reg(ADCON0_ADD, (adcon & 0x3) | (current_channel << 2));
+            reg_write(ADCON0_ADD, (adcon & 0x3) | (current_channel << 2));
             state = acq_time;
             break;
         case acq_time:
@@ -84,7 +84,7 @@ void adc_run(void){
             state = start_conv;
             break;
         case start_conv:
-            write_reg(ADCON0_ADD, (adcon | 2));
+            reg_write(ADCON0_ADD, (adcon | 2));
             state = conv_time;
             break;
         case conv_time:
@@ -92,9 +92,9 @@ void adc_run(void){
             state = result;
             break;
         case result:
-            conv = (read_reg(ADCON0_ADD) & 2);
+            conv = (reg_read(ADCON0_ADD) & 2);
             if(conv == 0){
-                read_voltage((read_reg(ADRESL_ADD) + (((uint16_t)read_reg(ADRESH_ADD))<<8)));
+                read_voltage((reg_read(ADRESL_ADD) + (((uint16_t)reg_read(ADRESH_ADD))<<8)));
                 change_channel();
                 state = set_channel;
             };

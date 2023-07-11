@@ -16,7 +16,7 @@ typedef struct WIND {
 } WIND_t;
 
 static const WIND_t WIND_PROFILE[] = {
-{ 8, 40,  3},        //  5 m/s wind, 40% variation, for  3 minutes
+{ 30 , 40,  3},        //  5 m/s wind, 40% variation, for  3 minutes
 {27, 30, 20},        // 27 m/s wind, 30% variation, for 20 minutes
 {16, 15, 15},        // 16 m/s wind, 15% variation, for 15 minutes
 {20, 35,  5},        // 20 m/s wind, 35% variation, for  5 minutes
