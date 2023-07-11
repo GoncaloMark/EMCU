@@ -3,7 +3,7 @@ OUTPUT_FILE  := ${OUTPUT_DIR}/emcu
 SIM_LIB      := ${OUTPUT_DIR}/libturbinesim.so
 PICSIM_LIB   := ${OUTPUT_DIR}/libpicsim.so
 C_SIM_SRC    := src/sim/windsim.c src/sim/batsim.c src/sim/turbinesim.c src/sim/brakesim.c
-C_PICSIM_SRC := src/sim/picsim/iosim.c src/sim/picsim/adcsim.c src/sim/picsim/pwmsim.c
+C_PICSIM_SRC := src/sim/picsim/iosim.c src/sim/picsim/adcsim.c src/sim/picsim/pwmsim.c src/sim/picsim/timersim.c
 C_DRV_SRC    := src/drivers/io.c src/drivers/mem.c src/drivers/timer.c src/drivers/adc.c src/drivers/pwm.c
 C_SRC        := src/main.c src/turbine_control.c
 
@@ -50,7 +50,6 @@ $(PICSIM_LIB):	$(C_PICSIM_OBJS)
 $(OUTPUT_FILE): $(C_OBJS)
 	@echo Linking: $@
 	@$(CCOMPILER) $(C_OBJS) -L$(OUTPUT_DIR) -lpicsim -lturbinesim -o "$(OUTPUT_FILE)"
-	@export LD_LIBRARY_PATH=$(pwd)/$(OUTPUT_DIR)
 
 .PHONY: clean
 clean: 

@@ -6,8 +6,7 @@
 #include "include/mem.h"
 
 void pwm_init(void){
-  reg_write(PWM5CON_ADD, 0x0008); // Set Polarity
-
+  reg_write(PWM5CON_ADD, 0x08); // Set Polarity
   reg_write(PWM6CON_ADD, 0x08); // Set Polarity
 
   reg_write(PR2_ADD,    0xFF);  // Set Period

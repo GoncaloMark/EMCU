@@ -9,6 +9,7 @@
 #include "sim/picsim/include/iosim.h"
 #include "sim/picsim/include/adcsim.h"
 #include "sim/picsim/include/pwmsim.h"
+#include "sim/picsim/include/timersim.h"
 #include "sim/include/batsim.h"
 #include "sim/include/brakesim.h"
 #include "sim/include/turbinesim.h"
@@ -27,6 +28,7 @@ void idle_run(void)
     // needs to be changed to a faster loop cycle intead of running in idle
     adc_run();
     adcsim_run();
+    tsim_run();
     // do nothing
     // add here functions meant run in the background during idle time
 }
@@ -38,6 +40,7 @@ int main(void) {
 
     input_t  in;                // pcb inputs  (ADC - Vin, Vbat, Vout)
     out.leds = green;
+    t_init();
     cycleTimer.req_time = 100;  // 100ms control loop 
     t_start(&cycleTimer);       // start cycle timer
     logTimer.req_time   = 200;  // 200ms log interval
@@ -50,52 +53,52 @@ int main(void) {
     while(1){
         // run adc to convert input voltages
         adc_run();
-        // get values measured by the ADC to inputs
-        in.vin  = adc_signalvalue(ADC_CH_VIN,  VIN_MAX,  0);
-        in.vbat = adc_signalvalue(ADC_CH_VBAT, VBAT_MAX, 0);
-        in.vout = adc_signalvalue(ADC_CH_VOUT, VOUT_MAX, 0);
-
-        // run wind turbine control software
-        turbine_control(in, &out);
-
-        // set digital outputs
-        set_outputs(&out);
-        // set pwm outputs
-        pwm_setDuty(PWM_CH_BRAKE, out.brake);
-        pwm_setRatio(PWM_CH_VOUT, in.vin, out.vout);
-
-        // run simulation code
-        // io simulation
-        iosim_run();
-        // run adc simulation
-        uint16_t vout = pwmsim_getRatioSignal(PWM_CH_VOUT, in.vin);
-        adcsim_setSignal(ADC_CH_VIN,  t.vout,    VIN_MAX,  0);
-        adcsim_setSignal(ADC_CH_VBAT, b.voltage, VBAT_MAX, 0);
-        adcsim_setSignal(ADC_CH_VOUT, vout,       VOUT_MAX, 0);
         adcsim_run();
+        tsim_run();
 
-        // run battery simulation
-        uint32_t active_power = batsim_run(&b, in.vout, t.genpower);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
-        acc_power += (active_power * BAT_SIM_CALL_RATE_ms) / 3600;
-        // run brake simulation
-        uint32_t wasted_power = brakesim_run(in.vin, pwmsim_getDuty(PWM_CH_BRAKE));
+        // run control and simulation
+        if (t_expired(&cycleTimer)) {
+          // get values measured by the ADC to inputs
+          in.vin  = adc_signalvalue(ADC_CH_VIN,  VIN_MAX,  0);
+          in.vbat = adc_signalvalue(ADC_CH_VBAT, VBAT_MAX, 0);
+          in.vout = adc_signalvalue(ADC_CH_VOUT, VOUT_MAX, 0);
 
-        // run wind turbine simulation
-        turbinesim_run(&t, active_power + wasted_power);
-        // log status every logInterval
-        if(t_expired(&logTimer)){
-            printf(" WS: %4.2f m/s, WP: %4.2f kW, GP: %3.2f kW, RPM: %4d, VIN: %5.2fV, VBAT: %4.2fV, VOUT: %4.2fV, Active Power: %4d W, Stored Power: %4d Wh, Bat: %4.2f%%  \r", ((float)t.windspeed) / 100, ((float)t.windpower) / 1000, ((float)t.genpower) / 1000, t.rpm, ((float)in.vin) / 100, ((float)in.vbat) / 100, ((float)in.vout) / 100, active_power, acc_power / 1000, (float)b.soc / 100);
-            fflush(NULL);
-            t_start(&logTimer);
-        };
+          // run wind turbine control software
+          turbine_control(in, &out);
 
-        while(!t_expired(&cycleTimer)) 
-        {
-            // wait for cycle time to expire - run idle task
-            idle_run();
-        };
-        t_start(&cycleTimer);
+          // set digital outputs
+          set_outputs(&out);
+          // set pwm outputs
+          pwm_setDuty(PWM_CH_BRAKE, out.brake);
+          pwm_setRatio(PWM_CH_VOUT, in.vin, out.vout);
 
+          // run simulation code
+          // io simulation
+          iosim_run();
+          // run adc simulation
+          uint16_t vout = pwmsim_getRatioSignal(PWM_CH_VOUT, in.vin);
+          adcsim_setSignal(ADC_CH_VIN,  t.vout,    VIN_MAX,  0);
+          adcsim_setSignal(ADC_CH_VBAT, b.voltage, VBAT_MAX, 0);
+          adcsim_setSignal(ADC_CH_VOUT, vout,       VOUT_MAX, 0);
+          adcsim_run();
+          tsim_run();
+
+          // run battery simulation
+          uint32_t active_power = batsim_run(&b, in.vout, t.genpower);  // simulated battery charges with generated output voltage (out.vout or in.vout they should be the same)
+          acc_power += (active_power * BAT_SIM_CALL_RATE_ms) / 3600;
+          // run brake simulation
+          uint32_t wasted_power = brakesim_run(in.vin, pwmsim_getDuty(PWM_CH_BRAKE));
+
+          // run wind turbine simulation
+          turbinesim_run(&t, active_power + wasted_power);
+          // log status every logInterval
+          if(t_expired(&logTimer)){
+              printf(" WS: %4.2f m/s, WP: %4.2f kW, GP: %3.2f kW, RPM: %4d, VIN: %5.2fV, VBAT: %4.2fV, VOUT: %4.2fV, Active Power: %4d W, Stored Power: %4d Wh, Bat: %4.2f%%  \r", ((float)t.windspeed) / 100, ((float)t.windpower) / 1000, ((float)t.genpower) / 1000, t.rpm, ((float)in.vin) / 100, ((float)in.vbat) / 100, ((float)in.vout) / 100, active_power, acc_power / 1000, (float)b.soc / 100);
+              fflush(NULL);
+              t_start(&logTimer);
+          };
+          t_start(&cycleTimer);
+        }
     };
     
     return 0;    
