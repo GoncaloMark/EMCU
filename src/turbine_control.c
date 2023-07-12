@@ -31,4 +31,12 @@ void turbine_control(input_t in, output_t* out) {
     out->vout = 0;
     out->leds &= ~yellow;
   }
+
+  if (in.vin > 10000) {
+    out->brake = 5000;
+    out->leds |= red;
+  } else {
+    out->brake = 0;
+    out->leds &= ~red;
+  }
 }

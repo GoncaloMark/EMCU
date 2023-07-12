@@ -27,6 +27,5 @@ typedef enum LEDS {
 
 void init_io(void);
 void set_outputs(output_t* outputs);
-void get_inputs(input_t* inputs);
 
 #endif  // __IO_H__
