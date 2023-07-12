@@ -2,8 +2,8 @@
 /// \author Gonçalo Marques
 /// \date   2023-05
 
-#include "include/io.h"
-#include "include/mem.h"
+#include "drivers/include/io.h"
+#include "drivers/include/mem.h"
 #include <stdint.h>
 #define LATC_ADD  (0x010E)
 

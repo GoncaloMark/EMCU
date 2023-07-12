@@ -2,12 +2,14 @@
 /// \author Bernardo Marques
 /// \date   2023-05
 
+#define AVG_FILTER_DEPTH (10)
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
 #include <stdlib.h>
-#include "include/timer.h"
-#include "include/avg_filter.h"
+#include "drivers/include/timer.h"
+#include "util/include/avg_filter.h"
 
 typedef struct WIND {
     uint8_t AVG;        // Average Windspeed in m/s (0 to 20 ms/s)
@@ -16,7 +18,7 @@ typedef struct WIND {
 } WIND_t;
 
 static const WIND_t WIND_PROFILE[] = {
-{ 30 , 40,  3},        //  5 m/s wind, 40% variation, for  3 minutes
+{ 8, 40,  3},        //  8 m/s wind, 40% variation, for  3 minutes
 {27, 30, 20},        // 27 m/s wind, 30% variation, for 20 minutes
 {16, 15, 15},        // 16 m/s wind, 15% variation, for 15 minutes
 {20, 35,  5},        // 20 m/s wind, 35% variation, for  5 minutes
